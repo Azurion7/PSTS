@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <title>Title</title>
+
+    <style>
+    .loader {
+      border: 16px solid #f3f3f3; /* Light grey */
+      border-top: 16px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    </style>
+</head>
+
+<body>
+    <h1>Occupancy Detection Module Demo</h1>
+    <div>
+    <form id="myform" action="/upload" method=post enctype=multipart/form-data>
+        <p> Input an image</p>
+        <input type=file name=file><br>
+        <input type=submit value=Upload>
+    </form>
+    </div>
+
+    <h2>Results</h2>
+    <div id="loader" class="loader" style="display: none;"></div>
+    <div id="result" style="display: none;">
+        <span>#Cars detected = </span>
+        <span id="res"></span><br>
+        <img id="frame" height="375" width="500" src="#"/>
+    </div>
+</body>
+
+</html>
+
+<script>
+$('#myform').submit(
+    function( e ) {
+        $('#result').css('display', 'none');
+        $('#loader').css('display', 'block');
+        $.ajax( {
+            url: '/upload',
+            type: 'POST',
+            data: new FormData( this ),
+            processData: false,
+            contentType: false,
+            success: function(result){		
+                $('#loader').css('display', 'none');
+                if(result.n_cars != false){
+                    $("#res").text(result.n_cars);
+                    $("#frame").attr("src", result.filename);
+		    $('#result').css('display', 'block');
+                }
+            }
+        } );
+        e.preventDefault();
+    }
+);
+</script>
